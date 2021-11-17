@@ -1,0 +1,34 @@
+plugins {
+    id "io.micronaut.library" version "$micronautAppVersion"
+    id "maven-publish"
+}
+
+group 'com.snourian.micronaut'
+version '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        dynquery(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+dependencies {
+    api "com.querydsl:querydsl-jpa:$queryDSLVersion"
+    implementation "jakarta.persistence:jakarta.persistence-api:$jpaVersion"
+    implementation "io.micronaut:micronaut-jackson-databind"
+    implementation "io.micronaut.data:micronaut-data-model"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
