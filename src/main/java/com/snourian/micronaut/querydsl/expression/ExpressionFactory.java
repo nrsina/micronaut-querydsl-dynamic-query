@@ -23,8 +23,9 @@ public class ExpressionFactory {
     public static ExpressionEntries createFromParams(Class<?> entity, Map<String, String> params) {
         if (params.isEmpty())
             return new ExpressionEntries();
-        final ExpressionType exprType = extractExpressionType(params);
-        List<PredicateEntry> predicates = params.entrySet()
+        Map<String, String> searchParams = new HashMap<>(params);
+        final ExpressionType exprType = extractExpressionType(searchParams);
+        List<PredicateEntry> predicates = searchParams.entrySet()
                 .stream()
                 .filter(entry -> StringUtils.hasText(entry.getKey()) && StringUtils.hasText(entry.getValue()))
                 .map(entry -> create(entity, entry.getKey(), entry.getValue()))

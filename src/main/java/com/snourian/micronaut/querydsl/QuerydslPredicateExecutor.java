@@ -33,11 +33,13 @@ public interface QuerydslPredicateExecutor<T> {
 
     default Optional<T> findOne(Predicate predicate, Map<String, Object> hints) {
         JPAQuery<T> query = createQuery(predicate, hints);
+        logQuery(query);
         return Optional.ofNullable(query.fetchOne());
     }
 
     default Optional<T> findOne(QueryParameters params, Map<String, Object> hints) {
         JPAQuery<T> query = createQuery(params, hints);
+        logQuery(query);
         return Optional.ofNullable(query.fetchOne());
     }
 
@@ -51,11 +53,13 @@ public interface QuerydslPredicateExecutor<T> {
 
     default List<T> findAll(Predicate predicate, Map<String, Object> hints) {
         JPAQuery<T> query = createQuery(predicate, hints);
+        logQuery(query);
         return query.fetch();
     }
 
     default List<T> findAll(QueryParameters params, Map<String, Object> hints) {
         JPAQuery<T> query = createQuery(params, hints);
+        logQuery(query);
         return query.fetch();
     }
 
@@ -69,11 +73,13 @@ public interface QuerydslPredicateExecutor<T> {
 
     default List<T> findAll(QueryParameters params, Sort sort, Map<String, Object> hints) {
         JPAQuery<T> query = QuerydslHelper.applySorting(createQuery(params, hints), sort, getEntityPath());
+        logQuery(query);
         return query.fetch();
     }
 
     default List<T> findAll(Predicate predicate, Sort sort, Map<String, Object> hints) {
         JPAQuery<T> query = QuerydslHelper.applySorting(createQuery(predicate, hints), sort, getEntityPath());
+        logQuery(query);
         return query.fetch();
     }
 
@@ -88,12 +94,14 @@ public interface QuerydslPredicateExecutor<T> {
     default Page<T> findAll(QueryParameters params, Pageable pageable, Map<String, Object> hints) {
         JPAQuery<T> query = createQuery(params, hints);
         JPAQuery<T> paginatedQuery = QuerydslHelper.applyPagination(createQuery(params, hints), pageable, getEntityPath());
+        logQuery(paginatedQuery);
         return Page.of(paginatedQuery.fetch(), pageable, query.fetchCount());
     }
 
     default Page<T> findAll(Predicate predicate, Pageable pageable, Map<String, Object> hints) {
         JPAQuery<T> query = createQuery(predicate, hints);
         JPAQuery<T> paginatedQuery = QuerydslHelper.applyPagination(createQuery(predicate, hints), pageable, getEntityPath());
+        logQuery(paginatedQuery);
         return Page.of(paginatedQuery.fetch(), pageable, query.fetchCount());
     }
 
@@ -110,7 +118,6 @@ public interface QuerydslPredicateExecutor<T> {
         }
         customize(predicate);
         query = query.where(predicate);
-        logger.info(query.toString());
         return query;
     }
 
@@ -146,5 +153,10 @@ public interface QuerydslPredicateExecutor<T> {
     private EntityPath<T> getEntityPath() {
         Class<T> clazz = getEntityClass();
         return new PathBuilder<>(clazz, StringUtils.uncapitalize(clazz.getSimpleName()));
+    }
+
+    private void logQuery(JPAQuery<T> query) {
+        if (logger.isDebugEnabled())
+            logger.debug(query.toString());
     }
 }
