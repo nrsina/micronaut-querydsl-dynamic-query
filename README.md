@@ -17,6 +17,7 @@ Please visit [snourian.com](https://snourian.com) for more details:
 * **0.2.0** - first preview release
 
 ### Requirements
+* JDK 11 or above
 * Micronaut Framework
 * Micronaut Data
 * JPA
@@ -87,7 +88,7 @@ order by department.id desc limit ? offset ?
 
 If you want to make a "OR" predicate, just add **'EXPR_TYPE=anyOf'** to your parameters:
 
-```http request
+```text
 GET /search?employees.score=gt(70)&employees.rank=eq(Manager)&EXPR_TYPE=anyOf
 Query: select department from Department department
   inner join department.employees as department_employees
@@ -130,4 +131,5 @@ Some refactoring and optimization ideas:
 + Only call **BeanIntrospection** once for the root Entity in **PredicateEntry** class.
 + Currently, this library only supports "AND" and "OR" expressions. Support complex expressions by combining and/or predicates instead of only using "AND" or "OR".
 + I tried my best not to use reflection and this library heavily relies on Micronaut's compile-time bean introspection. But I haven't tested compiling to native image. It might need some work to support it; or maybe not!
++ Use regex in ExpressionFactory.extractOpAndValues(Class<?> propertyType, String value) method instead of splitting and comparing Strings.
 + Adding debug/trace logs and unit tests!
